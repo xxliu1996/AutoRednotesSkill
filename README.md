@@ -15,7 +15,7 @@
 ### 方式一：Claude Code
 
 ```bash
-git clone https://github.com/<your-username>/AutoRednotesSkill.git ~/.claude/skills/xhs-card-studio
+git clone https://github.com/xxliu1996/AutoRednotesSkill.git ~/.claude/skills/xhs-card-studio
 ```
 
 装完不用你自己再做别的——Claude 第一次实际用到这个 skill 时会自己检查依赖、

@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+.pixabay_key
+.DS_Store
+out/

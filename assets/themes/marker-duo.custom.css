@@ -1,0 +1,22 @@
+/* marker-duo 逃生舱
+ *
+ * 样图的招牌是「黑+橙双色大标题」和「双栏交错时间线」——
+ * token 只能管颜色字体，这两样都是结构，走这里。
+ */
+
+/* 内层大面板去掉——样图是通篇同一片米底，没有内嵌浅色卡片 */
+.card-inner { background: transparent; }
+
+/* h2 沿用橙色（步骤标题的观感），h3 用蓝色变化一下层次 */
+.card-content h3 { color: var(--c-accent-2, #4F7FA6); }
+
+/* ---- 步骤标签：实心圆角橙块，样图「第一步」那种 ---- */
+.card-content .step-tag {
+  display: inline-block;
+  background: var(--c-accent-fill, var(--c-accent));
+  color: #FFFFFF;
+  font-weight: 800;
+  padding: 6px 18px;
+  border-radius: 8px;
+  margin-right: 12px;
+}

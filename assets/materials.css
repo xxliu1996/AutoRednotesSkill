@@ -1,0 +1,126 @@
+/* 素材（SVG / 图片）样式
+ *
+ * 由 render_xhs.py 注入到主题 CSS **之后** —— 主题里写了 .card-content img，
+ * 尺寸与对齐规则必须赢过它。
+ *
+ * __MATERIAL_ACCENT__ 在注入时被主题 token 的 material_accent 替换。
+ * 内置主题的默认值是 currentColor，即跟随正文颜色；自定义主题可指定强调色。
+ */
+
+.card-content {
+    --material-accent: __MATERIAL_ACCENT__;
+}
+
+/* ---- 容器 ---- */
+
+.material {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 100%;
+    line-height: 0;          /* 消除 inline-block 底部的基线空隙 */
+    color: var(--material-accent);
+}
+
+.material > svg,
+.material > img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+}
+
+/* ---- 尺寸档位（正文可用宽度约 860px @1080 画布）---- */
+
+.material--sm   { width: 120px; }
+.material--md   { width: 220px; }
+.material--lg   { width: 380px; }
+.material--xl   { width: 560px; }
+
+.material--hero {
+    display: block;
+    width: 100%;
+    margin: 0 0 36px;
+}
+
+/* ---- 对齐 ---- */
+
+.material--left,
+.material--right {
+    margin-bottom: 12px;
+}
+
+.material--left  { float: left;  margin-right: 32px; }
+.material--right { float: right; margin-left: 32px; }
+
+.material--center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 浮动素材后面紧跟标题时，避免标题被裹进去 */
+.card-content h1,
+.card-content h2,
+.card-content h3 {
+    clear: both;
+}
+
+/* ---- 主题色接管 ----
+ * 默认只接管显式写了 currentColor 的路径（素材作者的主动选择）。
+ *
+ * recolor 分三档，而不是一刀切。一刀切会毁掉双色图形：蓝底圆 + 白色对勾，
+ * 若把 fill 和 stroke 都刷成同一个强调色，对勾就消失了。
+ *   recolor          只换填充 —— 适合面性图标（底色跟随主题，白色挖空保留）
+ *   recolor=stroke   只换描边 —— 适合线性图标 / 流程图
+ *   recolor=all      两者都换 —— 适合真正的单色图形
+ */
+
+.material--svg svg [fill="currentColor"],
+.material--svg svg [stroke="currentColor"] {
+    color: var(--material-accent);
+}
+
+.material--recolor svg [fill]:not([fill="none"]),
+.material--recolor-all svg [fill]:not([fill="none"]) {
+    fill: var(--material-accent);
+}
+
+.material--recolor-stroke svg [stroke]:not([stroke="none"]),
+.material--recolor-all svg [stroke]:not([stroke="none"]) {
+    stroke: var(--material-accent);
+}
+
+/* 明确标记为保持原样的元素不受 recolor 影响 —— 双色图形里的挖空色、
+   品牌 logo 的固定色可以用它豁免 */
+.material--svg svg [data-keep],
+.material--svg svg [data-keep] * {
+    fill: revert !important;
+    stroke: revert !important;
+}
+
+/* ---- 说明文字 ---- */
+
+.material-caption {
+    display: block;
+    font-size: 26px;
+    line-height: 1.5;
+    opacity: 0.6;
+    margin: 8px 0 24px;
+}
+
+/* ---- 缺失占位 ----
+ * 故意做得刺眼：素材找不到时必须在出图前就被看见，不能静默留白。
+ */
+
+.material--missing {
+    display: inline-block;
+    padding: 24px 32px;
+    border: 3px dashed #E5484D;
+    border-radius: 12px;
+    background: rgba(229, 72, 77, 0.08);
+    color: #E5484D;
+    font-size: 26px;
+    line-height: 1.5;
+    text-align: center;
+    word-break: break-all;
+}

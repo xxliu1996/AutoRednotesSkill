@@ -1,0 +1,28 @@
+/* dark-gold 逃生舱
+ *
+ * 探针报出的三个偏差都指向同一件事：卡片留白远多于样图（平均亮度 -30.8、
+ * 暗部占比 +12.5、高饱和占比 -8.9）—— 样图是密排，色块几乎顶到边。
+ *
+ * 模板的内边距是 50px（外层）+ 60px（内层）写死在 render_xhs.py 的
+ * container_style / inner_style 里，token schema 没有对应槽位。
+ * 这正是逃生舱的用途：不改 schema，直接覆盖。
+ */
+
+.card-container {
+  padding: 32px;
+}
+
+.card-inner {
+  padding: 36px 34px;
+}
+
+/* 内容区变宽后，标题与首个元素之间可以更紧 */
+.card-content h1 {
+  margin-bottom: 32px;
+}
+
+/* 栅格间距同步收紧，让色块占比更接近样图 */
+.card-content .grid {
+  gap: 18px;
+  margin: 24px 0;
+}

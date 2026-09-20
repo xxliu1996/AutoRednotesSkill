@@ -1,0 +1,861 @@
+/* 版式组件库
+ *
+ * 为什么需要这层：主题 token 只能换颜色/字体/圆角，版式永远是「h1 → 段落 → 列表」
+ * 的单栏流。样图里那种多栏并排、编号圆徽、分区面板，token 系统表达不了 ——
+ * 这才是"生成的图很单调"的真正原因。
+ *
+ * 组件全部用 var(--c-*) 取色，所以 8 套内置主题和任何自定义主题都能直接用，
+ * 不需要为每个主题重写一遍组件。变量由 render_xhs.py 从主题 token 注入。
+ *
+ * 用法见 references/layout-authoring.md。content.md 里直接写 HTML，
+ * 需要在组件内部混用 markdown 时加 markdown="1"。
+ */
+
+/* ============================================================
+   栅格 —— 多栏并排
+   ============================================================ */
+
+.grid {
+    display: grid;
+    gap: 24px;
+    margin: 32px 0;
+    align-items: stretch;
+}
+
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ---- 分类配色：每栏一个色 ----
+ *
+ * 加 class="palette" 后，栅格的每个子元素把自己的 --c-accent 换成调色板里的
+ * 第 n 个色。因为所有组件（panel-capped 的标题条、badge、col-title、边框）
+ * 都是通过 var(--c-accent) 取色，一处覆盖，整栏跟着变 —— 不用给每栏写样式。
+ *
+ * 这是「四栏各一色」那类版式的实现方式。调色板由主题 token 的 palette 提供，
+ * 未定义时回退到主色，加了 palette 也不会出错。
+ */
+/* 选择器不限定 .grid —— steps、stats、badge-row 的外层包一个 .palette 同样生效。
+   限定成 .grid.palette 时，非栅格版式就拿不到分类配色，卡片仍然只有一个颜色。 */
+/* .palette 用文字安全色（--c-pNt），.palette-solid 用原色（--c-pN）当填充。
+   从样图取到的分类色多是「填充色」的饱和度，直接当深色底上的文字会发闷。 */
+/* 每栏同时给两个色：
+     --c-accent       文字安全色（浅色主题会压暗、深色主题会提亮）
+     --c-accent-fill   原色，给「拿强调色当背景」的元素用
+   只给一个不够：文字色当背景会发浊（浅色主题下压暗 42% 的蓝会变成藏青），
+   背景色当文字又会发闷。这个坑在药丸标题上踩过一次。 */
+.palette > *:nth-child(6n+1) { --c-accent: var(--c-p1t, #6E9FD8); --c-accent-fill: var(--c-p1, #4C7FBF); }
+.palette > *:nth-child(6n+2) { --c-accent: var(--c-p2t, #D9857C); --c-accent-fill: var(--c-p2, #C0554A); }
+.palette > *:nth-child(6n+3) { --c-accent: var(--c-p3t, #6FB894); --c-accent-fill: var(--c-p3, #46916A); }
+.palette > *:nth-child(6n+4) { --c-accent: var(--c-p4t, #D9AE72); --c-accent-fill: var(--c-p4, #C08A3E); }
+.palette > *:nth-child(6n+5) { --c-accent: var(--c-p5t, #A18FD1); --c-accent-fill: var(--c-p5, #7B62B8); }
+.palette > *:nth-child(6n+6) { --c-accent: var(--c-p6t, #63B0B8); --c-accent-fill: var(--c-p6, #2F8C97); }
+
+.palette-solid > *:nth-child(6n+1) { --c-accent: var(--c-p1, #4C7FBF); }
+.palette-solid > *:nth-child(6n+2) { --c-accent: var(--c-p2, #C0554A); }
+.palette-solid > *:nth-child(6n+3) { --c-accent: var(--c-p3, #46916A); }
+.palette-solid > *:nth-child(6n+4) { --c-accent: var(--c-p4, #C08A3E); }
+.palette-solid > *:nth-child(6n+5) { --c-accent: var(--c-p5, #7B62B8); }
+.palette-solid > *:nth-child(6n+6) { --c-accent: var(--c-p6, #2F8C97); }
+
+/* 语义绑定：不想按栏位序号分配时直接指定 —— 「风险项固定红、推荐项固定绿」。
+   写在子元素上，覆盖 nth-child 的序号分配。 */
+/* 语义类也必须同时给 --c-accent-fill，否则拿它当背景/边框的元素会回退到
+   被压暗（或提亮）的文字色 —— 指定 c-amber 却渲染出橄榄绿就是这么来的。 */
+.c-blue   { --c-accent: var(--c-p1t, #6E9FD8); --c-accent-fill: var(--c-p1, #4C7FBF); }
+.c-red    { --c-accent: var(--c-p2t, #D9857C); --c-accent-fill: var(--c-p2, #C0554A); }
+.c-green  { --c-accent: var(--c-p3t, #6FB894); --c-accent-fill: var(--c-p3, #46916A); }
+.c-amber  { --c-accent: var(--c-p4t, #D9AE72); --c-accent-fill: var(--c-p4, #C08A3E); }
+.c-purple { --c-accent: var(--c-p5t, #A18FD1); --c-accent-fill: var(--c-p5, #7B62B8); }
+.c-teal   { --c-accent: var(--c-p6t, #63B0B8); --c-accent-fill: var(--c-p6, #2F8C97); }
+
+/* 在 palette-solid 里语义绑定时要用填充色 */
+.palette-solid > .c-blue   { --c-accent: var(--c-p1, #4C7FBF); }
+.palette-solid > .c-red    { --c-accent: var(--c-p2, #C0554A); }
+.palette-solid > .c-green  { --c-accent: var(--c-p3, #46916A); }
+.palette-solid > .c-amber  { --c-accent: var(--c-p4, #C08A3E); }
+.palette-solid > .c-purple { --c-accent: var(--c-p5, #7B62B8); }
+.palette-solid > .c-teal   { --c-accent: var(--c-p6, #2F8C97); }
+
+/* 8 套内置主题的 CSS 是手写的、颜色写死，--c-accent 覆盖不到它们的
+   h1/strong/列表标记。这里在 .palette 范围内补回来，让内置主题也能分栏换色。
+   （自定义主题由 _template.css.tpl 生成，本身就走 var()，不需要这段。） */
+.palette > * strong,
+.palette > * b,
+.palette > * h2,
+.palette > * h3,
+.palette-solid > * h2,
+.palette-solid > * h3 {
+    color: var(--c-accent);
+}
+
+.palette > * ul li::marker,
+.palette > * ol li::marker {
+    color: var(--c-accent);
+}
+
+/* 整栏染色版：面板底色也用该栏的颜色，文字翻白 —— 样图那种「白底标题 +
+   彩色正文区」的强对比结构 */
+.grid.palette-solid > * .body,
+.grid.palette-solid > *.panel {
+    background: var(--c-accent);
+    color: #FFFFFF;
+}
+
+.grid.palette-solid > * .cap {
+    background: #FFFFFF;
+    color: var(--c-accent);
+}
+
+.grid.palette-solid > * .sub-label,
+.grid.palette-solid > * .divider {
+    color: #FFFFFF;
+}
+
+.grid.palette-solid > * strong,
+.grid.palette-solid > * b {
+    color: #FFFFFF;
+}
+
+.grid.palette-solid > * li::marker {
+    color: #FFFFFF;
+}
+
+/* 不等宽：主次两栏 */
+.grid-side { grid-template-columns: 1fr 1.6fr; }
+
+/* 奇数个条目时，让最后一个跨满整行 —— 否则末尾会孤零零留半行缺口。
+   5 个条目放两栏时必用。 */
+.span-2 { grid-column: 1 / -1; }
+
+/* 栏数多时正文字号要跟着降 —— 栏宽减半而字号不变，中文必然压字或溢出。
+   系数按「栏宽缩多少、字号跟着缩一部分」定，不是线性缩，否则 4 栏会小到读不清。 */
+.grid-2 { font-size: 0.86em; }
+.grid-3 { font-size: 0.74em; }
+.grid-4 { font-size: 0.62em; }
+.grid-2 .col-title { font-size: 1.4em; }
+.grid-3 .col-title { font-size: 1.3em; }
+.grid-4 .col-title { font-size: 1.2em; }
+
+/* ============================================================
+   面板 —— 栅格里的一栏，或独立使用
+   ============================================================ */
+
+.panel {
+    background: var(--c-solid);
+    border-radius: var(--c-radius);
+    padding: 28px 26px;
+    overflow: hidden;
+}
+
+.panel > *:first-child { margin-top: 0; }
+.panel > *:last-child  { margin-bottom: 0; }
+
+/* 顶部有色标题条的面板 —— 样图那种「白底标题 + 彩色正文区」的结构 */
+.panel-capped {
+    background: var(--c-solid);
+    border-radius: var(--c-radius);
+    overflow: hidden;
+    padding: 0;
+    /* 栅格把面板拉成等高后，.body 必须跟着长满，否则彩色正文区只到文字末尾，
+       下面露出一截底色 —— 同一行的两块看起来就像高度不一致 */
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-capped > .body { flex: 1; }
+
+.panel-capped > .cap {
+    background: var(--c-accent-fill, var(--c-accent));
+    color: var(--c-solid);
+    padding: 22px 24px;
+    font-family: var(--c-title-font);
+    font-weight: 800;
+    font-size: 1.15em;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.panel-capped > .body {
+    padding: 24px;
+}
+
+.panel-capped > .body > *:first-child { margin-top: 0; }
+.panel-capped > .body > *:last-child  { margin-bottom: 0; }
+
+/* 描边面板 —— 不占实色，适合深色满版主题 */
+.panel-outline {
+    background: transparent;
+    border: 3px solid var(--c-accent);
+    border-radius: var(--c-radius);
+    padding: 26px 24px;
+}
+
+/* ============================================================
+   编号圆徽 —— 样图里 1/2/3/4 那种
+   ============================================================ */
+
+/* .badge-sm 是自足的，不需要同时写 .badge —— 组件库里「必须配合另一个类才生效」
+   的修饰类是纯粹的坑（已经踩过：只写 badge-sm 结果渲染成一个裸数字）。 */
+.badge,
+.badge-sm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--c-accent-fill, var(--c-accent));
+    color: var(--c-solid);
+    font-family: var(--c-title-font);
+    font-weight: 900;
+    line-height: 1;
+    margin: 0 auto 18px;
+    flex: none;
+}
+
+.badge    { width: 76px; height: 76px; font-size: 40px; }
+.badge-sm { width: 52px; height: 52px; font-size: 28px; margin-bottom: 12px; }
+
+/* 徽章 + 文字横排 */
+.badge-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin: 26px 0;
+}
+
+.badge-row .badge,
+.badge-row .badge-sm { margin: 0; }
+
+.badge-row > .txt { flex: 1; min-width: 0; }
+.badge-row > .txt > *:first-child { margin-top: 0; }
+.badge-row > .txt > *:last-child  { margin-bottom: 0; }
+
+/* ============================================================
+   栏内小标题与分区 —— 样图的「大白话解释 / 评判标准 / 举例」
+   ============================================================ */
+
+.col-title {
+    font-family: var(--c-title-font);
+    font-weight: 800;
+    font-size: 1.5em;
+    line-height: 1.25;
+    color: var(--c-accent);
+    text-align: center;
+    margin: 0 0 18px;
+}
+
+.sub-label {
+    font-size: 0.78em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    opacity: 0.65;
+    text-align: center;
+    margin: 22px 0 10px;
+}
+
+/* 分区之间的虚线，样图里每栏内部就是这么隔开的 */
+.divider {
+    border: none;
+    border-top: 2px dashed currentColor;
+    opacity: 0.25;
+    margin: 20px 0;
+}
+
+/* ============================================================
+   对比 —— 左右两栏正反对照
+   ============================================================ */
+
+.vs {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    /* stretch 而不是 center：两侧文案长短不同时，center 会让两块高度不等还上下
+       错位，看起来就是「左右不对称」。stretch 强制等高，对比结构才立得住。 */
+    align-items: stretch;
+    gap: 20px;
+    margin: 32px 0;
+}
+
+.vs > .mark {
+    align-self: center;   /* 中间的 VS 仍然垂直居中 */
+    font-family: var(--c-title-font);
+    font-weight: 900;
+    font-size: 2em;
+    color: var(--c-accent);
+    opacity: 0.7;
+}
+
+.vs .good { border-left: 8px solid var(--c-accent); }
+.vs .bad  { border-left: 8px solid currentColor; opacity: 0.55; }
+
+.vs .good,
+.vs .bad {
+    background: var(--c-solid);
+    border-radius: var(--c-radius);
+    padding: 22px 24px;
+}
+
+/* ============================================================
+   数据条 —— 一行几个大数字
+   ============================================================ */
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    margin: 32px 0;
+    text-align: center;
+}
+
+.stats .num {
+    display: block;
+    font-family: var(--c-title-font);
+    font-weight: 900;
+    font-size: 1.9em;
+    line-height: 1.1;
+    color: var(--c-accent);
+}
+
+.stats .cap {
+    display: block;
+    font-size: 0.75em;
+    opacity: 0.7;
+    margin-top: 8px;
+}
+
+/* ============================================================
+   强调块 —— 单句话结论
+   ============================================================ */
+
+.highlight {
+    background: var(--c-accent-fill, var(--c-accent));
+    color: var(--c-solid);
+    border-radius: var(--c-radius);
+    padding: 28px 30px;
+    margin: 32px 0;
+    font-family: var(--c-title-font);
+    font-weight: 800;
+    font-size: 1.2em;
+    line-height: 1.45;
+}
+
+.highlight > *:first-child { margin-top: 0; }
+.highlight > *:last-child  { margin-bottom: 0; }
+
+/* highlight 的底色就是强调色，而主题给 strong/em/a/列表标记的也是强调色 ——
+   同色压同色，整段字直接隐形。凡是底色用了强调色的组件，内部的着色元素
+   都必须改回继承色。（曾经因为这个丢过一整句话且毫无报错。） */
+.highlight strong,
+.highlight b,
+.highlight em,
+.highlight i,
+.highlight a,
+.highlight code,
+.highlight .accent,
+.highlight .muted {
+    color: inherit;
+}
+
+/* 在强调块里想再强调一层，只能靠字重/下划线/反白框，不能靠颜色 ——
+   底色已经是强调色了。（.accent 压在 .highlight 里整段隐形，踩过两次。） */
+.highlight .hl-box {
+    background: var(--c-solid);
+    color: var(--c-accent-fill, var(--c-accent));
+    padding: 0.02em 0.2em;
+    border-radius: 0.12em;
+    font-weight: 900;
+}
+
+.highlight li::marker { color: inherit; }
+
+.highlight code {
+    background: rgba(0, 0, 0, 0.14);
+}
+
+/* ============================================================
+   步骤流 —— 竖向带连线的时间轴
+   ============================================================ */
+
+.steps { margin: 30px 0; }
+
+.steps > .step {
+    display: flex;
+    gap: 22px;
+    padding-bottom: 26px;
+    position: relative;
+}
+
+.steps > .step:last-child { padding-bottom: 0; }
+
+/* 连接线：画在圆点下方，最后一个不画 */
+.steps > .step:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 25px;
+    top: 56px;
+    bottom: 6px;
+    width: 3px;
+    background: var(--c-accent);
+    opacity: 0.35;
+}
+
+.steps .dot {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--c-accent-fill, var(--c-accent));
+    color: var(--c-solid);
+    font-family: var(--c-title-font);
+    font-weight: 900;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    z-index: 1;
+}
+
+.steps .txt { flex: 1; min-width: 0; padding-top: 4px; }
+.steps .txt > *:first-child { margin-top: 0; }
+.steps .txt > *:last-child  { margin-bottom: 0; }
+
+/* ============================================================
+   通用微调
+   ============================================================ */
+
+.tight  > * { margin-top: 0; margin-bottom: 12px; }
+.center { text-align: center; }
+.muted  { opacity: 0.65; }
+.accent { color: var(--c-accent); }
+
+/* 组件内部的段落节奏必须比正文流紧得多。
+   主题给 .card-content p 的是 35px 段间距 —— 那是给整页单栏正文用的，
+   套进一个 260px 宽的面板里会把卡片顶溢出。 */
+.panel p,
+.panel-outline p,
+.panel-capped .body p,
+.badge-row .txt p,
+.vs .good p,
+.vs .bad p,
+.steps .txt p,
+.highlight p,
+.stats p {
+    margin-bottom: 14px;
+}
+
+.panel p:last-child,
+.panel-outline p:last-child,
+.panel-capped .body p:last-child,
+.badge-row .txt p:last-child,
+.vs .good p:last-child,
+.vs .bad p:last-child,
+.steps .txt p:last-child,
+.highlight p:last-child {
+    margin-bottom: 0;
+}
+
+/* 组件里的列表同理 */
+.panel ul, .panel ol,
+.panel-outline ul, .panel-outline ol,
+.panel-capped ul, .panel-capped ol,
+.badge-row .txt ul, .badge-row .txt ol,
+.steps .txt ul, .steps .txt ol {
+    padding-left: 1.2em;
+    margin: 10px 0;
+}
+
+.panel li,
+.panel-outline li,
+.panel-capped li,
+.badge-row .txt li,
+.steps .txt li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   对比矩阵 —— 行标签 + N 列数据，样图那种"N 个方案在多个维度上对比"的表格
+   ============================================================ */
+
+/* 用真实 <table>，不用 div 网格——markdown 的 tables 扩展本来就支持，
+   行列对齐交给浏览器表格布局，比手写 grid 精确定位可靠得多。
+   写法：<table class="matrix palette-solid">…</table>，第一列是行名，
+   第一行（thead）是列头（可放图标/logo）。*/
+
+.card-content table.matrix {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 4px;
+    margin: 28px 0;
+    font-size: 0.72em;
+}
+
+.card-content table.matrix th,
+.card-content table.matrix td {
+    padding: 18px 14px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* 列头：白底深字，样图里放 logo/图标的那一条 */
+.card-content table.matrix thead th {
+    background: var(--c-solid);
+    color: var(--c-ink);
+    font-family: var(--c-title-font);
+    font-weight: 800;
+    font-size: 1.1em;
+    border-radius: 12px 12px 0 0;
+}
+
+/* 行名列：靠左、半透明、不随分类配色染色。
+   background/color 必须显式写——模板给所有 <th> 定义了 accent 背景 + 反白字
+  （给普通 markdown 表格表头用的），我的选择器优先级虽然更高，但没设的属性
+   会从那条基础规则透过来，行标签会被染成一片强调色。踩过一次才发现。 */
+.card-content table.matrix tbody th {
+    background: transparent;
+    color: var(--c-ink);
+    text-align: left;
+    font-weight: 700;
+    opacity: 0.65;
+    font-size: 0.85em;
+    white-space: nowrap;
+    padding-right: 10px;
+}
+
+.card-content table.matrix tbody td {
+    /* 默认走 ink——不加 palette-solid 时单元格背景是透明的（页面底色），
+       用 --c-solid（面板色）当字色，深色主题下会跟深色页面背景糊在一起。
+       只有 palette-solid 把背景染成强调色时，才需要翻成对比色，见下面那条规则。 */
+    color: var(--c-ink);
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.card-content table.matrix.palette-solid tbody td {
+    color: #FFFFFF;
+}
+
+/* 分类配色：按列上色，而不是按栏（栅格组件是按子元素序号，表格按列序号）。
+   跳过第 1 列（行名），第 2 列起对应 palette 的第 1-6 色。 */
+.card-content table.matrix.palette-solid tbody td:nth-child(2),
+.card-content table.matrix.palette-solid thead th:nth-child(2) { background: var(--c-p1, var(--c-accent)); }
+.card-content table.matrix.palette-solid tbody td:nth-child(3),
+.card-content table.matrix.palette-solid thead th:nth-child(3) { background: var(--c-p2, var(--c-accent)); }
+.card-content table.matrix.palette-solid tbody td:nth-child(4),
+.card-content table.matrix.palette-solid thead th:nth-child(4) { background: var(--c-p3, var(--c-accent)); }
+.card-content table.matrix.palette-solid tbody td:nth-child(5),
+.card-content table.matrix.palette-solid thead th:nth-child(5) { background: var(--c-p4, var(--c-accent)); }
+.card-content table.matrix.palette-solid tbody td:nth-child(6),
+.card-content table.matrix.palette-solid thead th:nth-child(6) { background: var(--c-p5, var(--c-accent)); }
+.card-content table.matrix.palette-solid tbody td:nth-child(7),
+.card-content table.matrix.palette-solid thead th:nth-child(7) { background: var(--c-p6, var(--c-accent)); }
+
+.card-content table.matrix.palette-solid thead th { color: #FFFFFF; }
+
+/* 行之间的虚线分隔——样图靠这个把矩阵切成一条条可扫读的行 */
+.card-content table.matrix tbody tr:not(:last-child) th {
+    border-bottom: 2px dashed var(--c-rule, rgba(0, 0, 0, 0.15));
+}
+
+/* ---- 统计数字块 —— 大数字 + 小标题，放进 panel-capped 的 body 里堆叠用 ---- */
+
+.card-content .stat-block {
+    text-align: center;
+    margin: 18px 0;
+}
+
+.card-content .stat-block .stat-num {
+    display: block;
+    font-family: var(--c-title-font);
+    font-weight: 900;
+    font-size: 1.7em;
+    line-height: 1.15;
+    color: #FFFFFF;
+}
+
+.card-content .stat-block .stat-cap {
+    display: block;
+    font-size: 0.62em;
+    opacity: 0.85;
+    margin-top: 4px;
+}
+
+/* 白底面板里用（未染色的 panel），数字走强调色而非白色 */
+.panel:not(.palette-solid *) .stat-block .stat-num,
+.grid:not(.palette-solid) .stat-block .stat-num {
+    color: var(--c-accent-fill, var(--c-accent));
+}
+
+/* ============================================================
+   交错时间线 —— 左右错开的步骤，中间一条虚线
+   ============================================================ */
+
+.card-content .timeline {
+    position: relative;
+    margin: 32px 0;
+    padding-top: 8px;
+}
+
+.card-content .timeline::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 3px solid var(--c-accent-fill, var(--c-rule, rgba(0, 0, 0, 0.2)));
+    transform: translateX(-50%);
+}
+
+.card-content .tl-step {
+    width: 46%;
+    margin-bottom: 32px;
+    position: relative;
+}
+
+.card-content .tl-step.tl-left { margin-right: 54%; text-align: left; }
+.card-content .tl-step.tl-right { margin-left: 54%; text-align: left; }
+
+.card-content .tl-badge {
+    display: inline-block;
+    background: var(--c-accent-fill, var(--c-accent));
+    color: #FFFFFF;
+    font-weight: 800;
+    font-size: 0.8em;
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+}
+
+.card-content .tl-step p {
+    margin: 6px 0 0;
+    font-size: 0.82em;
+    line-height: 1.55;
+}
+
+/* 加框版：marker-duo 样图的时间轴内容框是描边+浅底的卡片，
+   不是裸文字——"标题 + 核心目标: + 行动步骤:" 这种多字段堆叠信息量明显
+   更高，裸文字版（默认 .tl-step）压不住这么多字段，要用加框版兜住。
+   字段的粗体前缀（"核心目标："）直接用 markdown **粗体**写在 <p> 里即可，
+   不需要额外的字段组件。 */
+.card-content .tl-step.tl-box {
+    border: 2px solid var(--c-accent-fill, var(--c-accent));
+    background: var(--c-surface, rgba(255, 255, 255, 0.55));
+    border-radius: var(--c-radius, 14px);
+    padding: 22px 24px;
+}
+
+.card-content .tl-step.tl-box .tl-title {
+    display: block;
+    font-weight: 800;
+    font-size: 0.92em;
+    color: var(--c-accent-fill, var(--c-accent));
+    margin-bottom: 4px;
+}
+
+/* 紧凑版：一张卡要装下 4 个以上 tl-box 时用，字段从"标题+两行字段"
+   压缩成"标题+一行话"，撑不满一张卡就别拆成两张卡。 */
+.card-content .timeline.compact { margin: 24px 0; }
+.card-content .timeline.compact .tl-step { margin-bottom: 22px; }
+.card-content .timeline.compact .tl-step.tl-box {
+    padding: 14px 18px;
+    border-radius: 12px;
+}
+.card-content .timeline.compact .tl-step.tl-box .tl-title {
+    font-size: 0.86em;
+    margin-bottom: 2px;
+}
+.card-content .timeline.compact .tl-step p {
+    font-size: 0.74em;
+    line-height: 1.4;
+}
+
+/* ============================================================
+   放射状 Hub —— 中心一张图，周围环绕编号说明
+
+   默认版（无 .hub-radial）：居中主图 + 两列堆叠，不追求精确角度，
+   任何条目数都不会崩，跨主题通用。
+
+   .hub-radial 版：marker-duo 样图反复出现"真的绕一圈"的放射构图，
+   要点位置对齐八个方位（上/右上/右/右下/下/左下/左/左上），不是任意角度——
+   所以不用连续角度计算，用八个固定方位类 `.pos-n/.pos-ne/.pos-e/...`
+   即可精确复刻，换条目数只要换用几个方位、不会跟"连续角度"那样因为
+   条目数变化而重新计算——8 个方位任选 3-8 个组合，条目数变化不会崩。
+   ============================================================ */
+
+.card-content .hub {
+    margin: 30px 0;
+}
+
+.card-content .hub-radial {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    margin: 10px 0;
+}
+
+.card-content .hub-radial .hub-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 42%;
+    text-align: center;
+}
+
+.card-content .hub-radial .hub-center .hub-label {
+    margin: 10px 0 0;
+    font-weight: 800;
+    font-size: 0.9em;
+    color: var(--c-ink, #241C14);
+}
+
+.card-content .hub-radial .hub-items {
+    display: block;
+    position: absolute;
+    inset: 0;
+}
+
+.card-content .hub-radial .hub-item {
+    position: absolute;
+    width: 36%;
+    text-align: left;
+    margin: 0;
+}
+
+.card-content .hub-radial .hub-item.pos-n  { top: 0;    left: 50%;  width: 40%; transform: translate(-50%, 0);    text-align: center; }
+.card-content .hub-radial .hub-item.pos-s  { top: 100%; left: 50%;  width: 40%; transform: translate(-50%, -100%); text-align: center; }
+.card-content .hub-radial .hub-item.pos-ne { top: 15%;  left: 100%; transform: translate(-100%, 0); }
+.card-content .hub-radial .hub-item.pos-e  { top: 50%;  left: 100%; transform: translate(-100%, -50%); }
+.card-content .hub-radial .hub-item.pos-se { top: 82%;  left: 100%; transform: translate(-100%, -100%); }
+.card-content .hub-radial .hub-item.pos-nw { top: 15%;  left: 0;    transform: translate(0, 0); }
+.card-content .hub-radial .hub-item.pos-w  { top: 50%;  left: 0;    transform: translate(0, -50%); }
+.card-content .hub-radial .hub-item.pos-sw { top: 82%;  left: 0;    transform: translate(0, -100%); }
+
+.card-content .hub-image {
+    display: block;
+    margin: 0 auto 24px;
+    text-align: center;
+}
+
+.card-content .hub-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.card-content .hub-item {
+    text-align: center;
+}
+
+.card-content .hub-item .hub-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--c-accent-fill, var(--c-accent));
+    color: #FFFFFF;
+    font-weight: 900;
+    font-size: 0.8em;
+    margin-bottom: 8px;
+}
+
+.card-content .hub-item p {
+    margin: 4px 0 0;
+    font-size: 0.78em;
+    line-height: 1.5;
+}
+
+/* 奇数个 hub-item 时最后一个居中跨行 */
+.card-content .hub-item.span-2 { grid-column: 1 / -1; }
+
+/* ============================================================
+   十字象限图 —— 2x2 网格中间画一个真十字轴线，四象限各自标题+副标题+正文
+
+   跟普通 `.grid.grid-2` 四宫格的区别：这个组件的重点是"看起来像一张
+   坐标图/信息图表"，中间贯穿的十字线是关键特征，不能省略，否则退化成
+   跟 dark-gold/kraft-marker 一样的普通四宫格，丢失了 marker-duo 样图
+   "真的画了一个坐标轴"这个辨识度很高的构图。
+   ============================================================ */
+
+.card-content .quadrant {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 40px 36px;
+    padding: 46px 28px 28px;
+    margin: 30px 0;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: var(--c-radius, 18px);
+}
+
+.card-content .quadrant::before {
+    /* 横轴 */
+    content: "";
+    position: absolute;
+    left: 4%;
+    right: 6%;
+    top: 50%;
+    height: 0;
+    border-top: 3px solid var(--c-accent-fill, var(--c-accent));
+}
+
+.card-content .quadrant::after {
+    /* 纵轴 */
+    content: "";
+    position: absolute;
+    top: 8%;
+    bottom: 4%;
+    left: 50%;
+    width: 0;
+    border-left: 3px solid var(--c-accent-fill, var(--c-accent));
+}
+
+.card-content .quad-item {
+    position: relative;
+}
+
+.card-content .quad-item .q-title {
+    display: block;
+    font-weight: 900;
+    font-size: 1.05em;
+    color: var(--c-accent-fill, var(--c-accent));
+    margin-bottom: 4px;
+}
+
+.card-content .quad-item .q-sub {
+    display: block;
+    font-weight: 700;
+    font-size: 0.8em;
+    color: var(--c-accent-fill, var(--c-accent));
+    opacity: 0.85;
+    margin-bottom: 10px;
+}
+
+.card-content .quad-item p {
+    margin: 0;
+    font-size: 0.78em;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   通用图标格 —— 图 + 说明文字堆叠（跨主题基础版，风格化主题可在
+   custom.css 里覆盖 .cap 的样式，如 kraft-marker 把它换成贴纸胶囊）
+   ============================================================ */
+
+.card-content .icon-tile {
+    text-align: center;
+}
+
+.card-content .icon-tile .material {
+    margin: 0 auto 10px;
+}
+
+.card-content .icon-tile .cap {
+    display: block;
+    font-size: 0.78em;
+    font-weight: 700;
+    opacity: 0.85;
+}

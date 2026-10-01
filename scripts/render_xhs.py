@@ -8,7 +8,7 @@
 
 选项:
     --output-dir, -o     输出目录（默认为当前工作目录）
-    --theme, -t          排版主题：dark-gold, marker-duo, kraft-marker
+    --theme, -t          排版主题：dark-gold, marker-duo, kraft-marker, scrapbook-kai
     --mode, -m           分页模式：
                          - separator  : 按 --- 分隔符手动分页（默认）
                          - auto-fit   : 自动缩放文字以填满固定尺寸
@@ -57,7 +57,7 @@ DEFAULT_WIDTH = 1080
 DEFAULT_HEIGHT = 1440
 MAX_HEIGHT = 4320  # dynamic 模式最大高度
 
-# 可用主题 = 8 套内置 + assets/themes/*.json 里发现的自定义主题（见 themes.py）
+# 可用主题 = assets/themes/*.json 里发现的主题（见 themes.py）
 AVAILABLE_THEMES = theme_registry.discover_themes()
 
 # 分页模式
@@ -129,10 +129,13 @@ _BLOCK_COMPONENTS = {
     'timeline', 'tl-step', 'hub', 'hub-image', 'hub-items', 'hub-item',
     'hub-radial', 'hub-center',
     'icon-tile', 'stat-block', 'quadrant', 'quad-item',
+    'sticky', 'scroll-note', 'note-panel', 'dash-card', 'todo', 'disclaimer',
 }
 
 #: 只放一行字的组件 —— 按行内 markdown 解析，避免被包进 <p> 破坏居中/内边距
-_SPAN_COMPONENTS = {'cap', 'col-title', 'sub-label', 'badge', 'badge-sm', 'dot', 'mark', 'num', 'hub-label', 'q-title', 'q-sub', 'tl-title'}
+_SPAN_COMPONENTS = {'cap', 'col-title', 'sub-label', 'badge', 'badge-sm', 'dot', 'mark', 'num', 'hub-label', 'q-title', 'q-sub', 'tl-title',
+                     'sticky-title', 'dash-cap', 'dash-note',
+                     'w-red', 'w-green', 'w-amber', 'w-ink'}
 
 _DIV_OPEN_RE = re.compile(r'<(div|p|span)\b([^>]*)>', re.IGNORECASE)
 _CLASS_RE = re.compile(r'\bclass\s*=\s*["\']([^"\']*)["\']', re.IGNORECASE)

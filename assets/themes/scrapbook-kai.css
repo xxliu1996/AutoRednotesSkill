@@ -1,0 +1,202 @@
+/* 注意：取色一律走 var(--c-accent, <字面值>) 而不是裸字面值。
+   字面值保证无覆盖时行为不变；变量则让版式组件的分类配色
+   （.palette 逐栏覆盖 --c-accent）能穿透到 h1 / strong / 列表标记 /
+   引用条这些由主题定义的元素上。写死字面值的话，分栏换色只能换到
+   组件自己的部分，主题管的部分仍是同一个颜色。 */
+
+/* ============================================
+   剪贴报·楷体多色
+   由 scripts/build_theme.py 从 scrapbook-kai.json 生成 —— 不要手改这个文件，
+   改 token 后重新运行 build_theme.py。
+   ============================================ */
+
+.card-inner {
+  background: #F3D274;
+  border-radius: 22px;
+  border: none;
+  box-shadow: none;
+
+  /* 垂直对齐。内容偏少时顶对齐会在下方留一大片空，
+     content_align: center 让内容在卡片里居中。
+     .card-inner 在 separator 模式下已被 min-height 撑满，所以居中在它内部生效。 */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.card-content {
+  color: #1C1A15;
+  font-family: 'Kaiti SC', 'STKaiti', 'BiauKaiTC', serif;
+  font-size: 40px;
+  /* 浅色主题上 400 字重的中文笔画偏细，压在近白底上会显得"发虚"。
+     这不是渲染模糊 —— 1:1 看边缘是干净的，是笔画量不够。 */
+  font-weight: 700;
+  line-height: 1.75;
+}
+
+/* ---- 标题 ---- */
+
+.card-content h1 {
+  font-family: "zihunzhengkuchaojihei", 'Noto Sans SC', sans-serif;
+  font-size: 78px;
+  font-weight: 900;
+  color: var(--c-accent, #C8481C);
+  margin-bottom: 40px;
+  line-height: 1.3;
+  
+}
+
+.card-content h2 {
+  font-family: "zihunzhengkuchaojihei", 'Noto Sans SC', sans-serif;
+  font-size: 52px;
+  font-weight: 900;
+  color: #0B0A08;
+  margin: 50px 0 25px 0;
+  line-height: 1.4;
+}
+
+.card-content h3 {
+  font-family: "zihunzhengkuchaojihei", 'Noto Sans SC', sans-serif;
+  font-size: 44px;
+  font-weight: 600;
+  color: var(--c-accent-2, #00A650);
+  margin: 40px 0 20px 0;
+  line-height: 1.4;
+}
+
+/* ---- 正文 ---- */
+
+.card-content p {
+  margin-bottom: 35px;
+}
+
+.card-content strong,
+.card-content b {
+  font-weight: 700;
+  color: var(--c-accent, #C8481C);
+}
+
+.card-content em,
+.card-content i {
+  font-style: italic;
+  color: var(--c-accent-2, #00A650);
+}
+
+.card-content a {
+  color: var(--c-accent, #C8481C);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+/* ---- 列表 ---- */
+
+.card-content ul,
+.card-content ol {
+  margin: 0 0 35px 0;
+  padding-left: 50px;
+}
+
+.card-content li {
+  margin-bottom: 20px;
+  line-height: 1.75;
+}
+
+.card-content ul li::marker {
+  color: var(--c-accent, #C8481C);
+}
+
+.card-content ol li::marker {
+  color: var(--c-accent, #C8481C);
+  font-weight: 700;
+}
+
+/* ---- 引用 ---- */
+
+.card-content blockquote {
+  margin: 40px 0;
+  padding: 30px 36px;
+  background: rgba(200, 72, 28, 0.10);
+  border-left: 10px solid var(--c-accent, #C8481C);
+  border-radius: 14px;
+}
+
+.card-content blockquote p {
+  margin: 0;
+  color: #0B0A08;
+}
+
+/* ---- 代码 ---- */
+
+.card-content code {
+  font-family: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  font-size: 34px;
+  background: rgba(200, 72, 28, 0.12);
+  color: #C8481C;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.card-content pre {
+  margin: 35px 0;
+  padding: 32px;
+  background: #1F2430;
+  border-radius: 22px;
+  overflow-x: hidden;
+}
+
+.card-content pre code {
+  background: none;
+  padding: 0;
+  color: #E6E6E6;
+  font-size: 34px;
+  line-height: 1.6;
+}
+
+/* ---- 分隔线与表格 ---- */
+
+.card-content hr {
+  border: none;
+  border-top: 3px solid rgba(28, 26, 21, 0.28);
+  margin: 45px 0;
+}
+
+.card-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 35px 0;
+  font-size: 34px;
+}
+
+.card-content th {
+  background: var(--c-accent, #C8481C);
+  color: #FFFFFF;
+  padding: 18px;
+  text-align: left;
+}
+
+.card-content td {
+  padding: 18px;
+  border-bottom: 2px solid rgba(28, 26, 21, 0.28);
+}
+
+/* ---- 图片与标签 ---- */
+
+.card-content img {
+  max-width: 100%;
+  border-radius: 22px;
+}
+
+.tags-container {
+  margin-top: 45px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.tag {
+  font-size: 30px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  background: rgba(200, 72, 28, 0.14);
+  color: #C8481C;
+}

@@ -61,7 +61,7 @@ echo "你的key" > ~/.claude/skills/xhs-card-studio/.pixabay_key
 - **不代写内容** —— 文案由你在 `content.md` 里定稿，skill 负责审查、配版式、出图
 - **不用 AI 生图** —— 卡片是用真实 HTML/CSS 渲染的（Playwright 截图），字是真的字、
   排版是真的排版，不会有 AI 生图常见的文字乱码、结构跑偏
-- **🎨 3 套主题，全部从真实小红书样图逐张提取**（不是配色模板，是真实账号的
+- **🎨 4 套主题，全部从真实小红书样图逐张提取**（不是配色模板，是真实账号的
   构图习惯，见下方「已收录的主题」），也支持你自己丢一张样图进来提取新的一套
 - **🧱 组件化排版**：多栏栅格、编号圆徽、正反对比、步骤流、放射状 Hub、
   之字形时间轴、十字象限图……不是所有卡片都只能是"标题+一段话"
@@ -77,15 +77,15 @@ echo "你的key" > ~/.claude/skills/xhs-card-studio/.pixabay_key
 > 所有示例均为 1080×1440px，小红书推荐 3:4 比例。完整素材（含各主题的
 > `content_cards_<theme>.md` 源文件）见 [`examples/predicting-industry-trends/`](examples/predicting-industry-trends/)
 
-同一份关于"如何预测行业趋势"的内容，分别用 `dark-gold`（财经风）、`marker-duo`
-（职场干货风）、`kraft-marker`（科普手绘风）三套主题出图：
+同一份关于"如何预测行业趋势"的内容，分别用四套主题出图：
 
-| dark-gold | marker-duo | kraft-marker |
-|---|---|---|
-| ![](examples/predicting-industry-trends/output/dark-gold/cover.png) | ![](examples/predicting-industry-trends/output/marker-duo/cover.png) | ![](examples/predicting-industry-trends/output/kraft-marker/cover.png) |
-| ![](examples/predicting-industry-trends/output/dark-gold/card_2.png) | ![](examples/predicting-industry-trends/output/marker-duo/card_2.png) | ![](examples/predicting-industry-trends/output/kraft-marker/card_2.png) |
+| dark-gold | marker-duo | kraft-marker | scrapbook-kai |
+|---|---|---|---|
+| 财经风 | 职场干货风 | 科普手绘风 | 剪贴报风 |
+| ![](examples/predicting-industry-trends/output/dark-gold/cover.png) | ![](examples/predicting-industry-trends/output/marker-duo/cover.png) | ![](examples/predicting-industry-trends/output/kraft-marker/cover.png) | ![](examples/predicting-industry-trends/output/scrapbook-kai/cover.png) |
+| ![](examples/predicting-industry-trends/output/dark-gold/card_2.png) | ![](examples/predicting-industry-trends/output/marker-duo/card_2.png) | ![](examples/predicting-industry-trends/output/kraft-marker/card_2.png) | ![](examples/predicting-industry-trends/output/scrapbook-kai/card_4.png) |
 
-同一份文案，三套主题的版式语言完全不同——这是 skill 的核心设计：**版式不是配色
+同一份文案，四套主题的版式语言完全不同——这是 skill 的核心设计：**版式不是配色
 换皮，是每套主题自己的构图习惯**。
 
 ---
@@ -161,13 +161,19 @@ subtitle: "封面副标题"
 
 ## 🎨 已收录的主题
 
-这个仓库只收录 **3 套主题**，没有通用内置主题——不追求"主题多"，追求"每套都是真的从样图里抠出来的"：
+这个仓库只收录 **4 套主题**，没有通用内置主题——不追求"主题多"，追求"每套都是真的从样图里抠出来的"：
 
 | 主题 | 视觉语言 | 适合内容 |
 |---|---|---|
 | `dark-gold` | 深蓝底 + 金色标题，行标签对比矩阵 | 财经、评测、多方案对比 |
 | `marker-duo` | 米橙底 + 黑橙双色大标题，放射状 Hub、之字形时间轴 | 职场干货、步骤教程 |
 | `kraft-marker` | 牛皮纸底 + 马克笔高光/黄色荧光笔框，贴纸标签 | 科普、知识点讲解 |
+| `scrapbook-kai` | 卡其灰底 + **楷体正文** + 标题逐词换色，便签/图钉/卷轴/虚线框剪贴报 | 财经科普、书单、清单盘点 |
+
+`scrapbook-kai` 是唯一正文用**楷体**的一套（其余三套都是黑体），还带一批
+专属组件：便签 `.sticky`（折角 + 红图钉）、卷轴 `.scroll-note`、橙边正文框
+`.note-panel`、虚线卡 `.dash-card`、空心方框待办 `.todo`、标题逐词换色
+`.w-red/.w-green/.w-amber`、免责声明条 `.disclaimer`。
 
 每套主题的版式规律（哪些组件、什么配色逻辑）记在各自的 `assets/themes/<theme>.custom.css`
 注释里和 `references/layout-authoring.md`「主题专属组件」一节，改主题或加新
@@ -202,7 +208,7 @@ xhs-card-studio/
 │   ├── fetch_images.py       图库检索（Pixabay）
 │   └── check_deps.sh         依赖安装
 ├── assets/
-│   ├── themes/                3 套主题的 CSS / JSON token / custom.css 逃生舱
+│   ├── themes/                4 套主题的 CSS / JSON token / custom.css 逃生舱
 │   ├── components.css         版式组件库
 │   └── materials.css          素材样式
 ├── references/                各类使用说明与踩坑记录
@@ -215,7 +221,7 @@ xhs-card-studio/
 
 [`examples/predicting-industry-trends/`](examples/predicting-industry-trends/) 是一份真实
 跑过的示例：同一份「如何预测行业趋势」的内容，分别为 `dark-gold`、`marker-duo`、
-`kraft-marker` 三套主题写了各自的版式（`content_cards_<theme>.md`），并附上渲染
+`kraft-marker`、`scrapbook-kai` 四套主题写了各自的版式（`content_cards_<theme>.md`），并附上渲染
 好的成品图（`output/<theme>/`）。想看 skill 实际产出效果、或者想抄一份内容结构
 当模板改，从这里开始最快。
 
@@ -223,11 +229,14 @@ xhs-card-studio/
 
 ## ⚠️ 注意事项
 
-1. **字体授权**：`kraft-marker` / `marker-duo` 用到的展示字体
+1. **字体授权**：`kraft-marker` / `marker-duo` / `scrapbook-kai` 用到的展示字体
    （如 `zihunzhengkuchaojihei`、`ZHDH`）多数是商用需授权的个人字库，仓库里
    **不包含字体文件**——主题 CSS 只是引用字体族名，渲染时如果你的系统没装
    同名字体会自动回退到 `Noto Sans SC`，效果会跟示例图有出入。要跟示例图一致
    需要自己去字体厂商网站获取正版授权后安装到系统里。
+   `scrapbook-kai` 的正文字体 `Kaiti SC` 是 macOS 自带的系统楷体，
+   Windows / Linux 上没有这支字，会回退到默认衬线体——这套主题最好在
+   macOS 上跑，或自行替换 `font_body` 为本机可用的楷体。
 2. **不负责发布**：这个 skill 只出图片文件，不包含自动发布到小红书的功能。
 3. **图片尺寸**：默认 1080×1440px，符合小红书推荐 3:4 比例。
 

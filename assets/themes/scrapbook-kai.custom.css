@@ -1,0 +1,209 @@
+/* scrapbook-kai 逃生舱
+ *
+ * 这套主题的识别度几乎全在「拟物剪贴报」这层：黄色便签（带折角）、红图钉、
+ * 羊皮卷轴、黑色虚线卡片、橙边浅黄正文框，以及标题的逐词换色。
+ * 这些都是 token schema 里没有槽位的东西，全部写在这里。
+ */
+
+.card-inner { background: transparent; }
+
+/* 标题默认纯黑，不取强调色。
+   模板默认给 h1 上 var(--c-accent)，但这套样图的标题永远是黑的——
+   颜色只来自「逐词换色」的 .w-* span，整行统一上色反而丢掉了签名特征。
+   h2/h3 同理，层级靠字号和字重区分，不靠颜色。 */
+.card-content h1 { color: #14120E; }
+.card-content h2 { color: #14120E; }
+.card-content h3 { color: #C8481C; }   /* 三级标题保留橙红，做小节引导 */
+
+/* ============================================================
+   逐词多色标题 —— 这套主题最强的签名特征
+   样图里标题不是整行一色，是一句话里每个词各给一色（红/绿/橙黄轮换）。
+   ============================================================ */
+
+/* .cover-title 用 background-clip:text + -webkit-text-fill-color:transparent
+   做渐变裁切，而 -webkit-text-fill-color 会被子元素继承，且在 WebKit 里
+   优先级高于 color——只改 color 的话，封面标题里的彩色词会直接隐形。
+   两个属性必须一起覆盖。这条坑在 kraft-marker 的 .marker/.hl-box 上踩过两次，
+   这里是第三次，直接按已知解法写。
+   选择器也不能限定在 .card-content 下：.cover-title 是它的兄弟节点不是后代。 */
+.w-red,  .cover-title .w-red,  .card-content .w-red   { color: #D6140F !important; -webkit-text-fill-color: #D6140F !important; }
+.w-green,.cover-title .w-green,.card-content .w-green { color: #00A650 !important; -webkit-text-fill-color: #00A650 !important; }
+.w-amber,.cover-title .w-amber,.card-content .w-amber { color: #F5A623 !important; -webkit-text-fill-color: #F5A623 !important; }
+.w-ink,  .cover-title .w-ink,  .card-content .w-ink   { color: #14120E !important; -webkit-text-fill-color: #14120E !important; }
+
+/* ============================================================
+   黄色便签纸 —— 右下角折角 + 可选红图钉
+   ============================================================ */
+
+.card-content .sticky {
+  position: relative;
+  background: #F7D96B;
+  color: #1C1A15;
+  border-radius: 4px;
+  padding: 24px 30px 28px;
+  margin: 18px 0;
+  box-shadow: 2px 3px 0 rgba(28, 26, 21, 0.16);
+  /* 折角靠 clip-path 切掉右下角，再用 ::after 补一块深一度的三角当翻起的纸背 */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 46px), calc(100% - 46px) 100%, 0 100%);
+}
+
+.card-content .sticky::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, #D9B845 0%, #D9B845 50%, transparent 50%);
+}
+
+/* Check List 那种手写英文小标题 */
+.card-content .sticky .sticky-title {
+  display: block;
+  font-family: 'Bradley Hand', 'Noteworthy', 'Segoe Script', cursive;
+  font-size: 1.05em;
+  font-weight: 700;
+  color: #1C1A15;
+  margin-bottom: 16px;
+  padding-left: 58px;   /* 给左上角的图钉让位 */
+}
+
+/* 红图钉：给 .sticky 加 .pin 就出现 */
+.card-content .sticky.pin::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #FF6B60 0%, #D6140F 55%, #8E0C08 100%);
+  box-shadow: 1px 3px 0 rgba(28, 26, 21, 0.28);
+}
+
+/* 空心方框待办列表——样图 Check List 里那种 */
+.card-content .todo { list-style: none; padding-left: 4px; margin: 0; }
+.card-content .todo li {
+  position: relative;
+  padding-left: 46px;
+  margin-bottom: 12px;
+  line-height: 1.55;
+}
+.card-content .todo li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.28em;
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid #1C1A15;
+  border-radius: 3px;
+}
+
+/* ============================================================
+   橙边浅黄正文框 —— 样图里最主要的大段正文容器
+   ============================================================ */
+
+.card-content .note-panel {
+  background: linear-gradient(170deg, #F5D98A 0%, #EFC969 100%);
+  border: 4px solid #C8641C;
+  border-radius: 30px;
+  padding: 24px 32px;
+  margin: 18px 0;
+  color: #1C1A15;
+}
+
+/* 框里的强调句用橙红，跟样图一致。底色是浅黄不是强调色，所以橙红字不会消失
+   ——「谁的底色是强调色，谁的文字就不能再用强调色」这条在这里不冲突。 */
+.card-content .note-panel strong { color: #C8481C; }
+
+/* ============================================================
+   羊皮卷轴便签 —— 样图用它放「补充说明 / 金句」
+   真卷轴的卷边需要位图，这里用两侧内收的渐变 + 上下微弧近似，
+   不追求逐像素复刻，只保留「两端收口、中间铺开」的识别特征。
+   ============================================================ */
+
+.card-content .scroll-note {
+  position: relative;
+  background: linear-gradient(180deg, #FBF3A8 0%, #F4E88C 100%);
+  border: 2px solid #C9BE72;
+  border-radius: 8px;
+  padding: 20px 48px;
+  margin: 16px 0;
+  color: #1C1A15;
+  font-size: 0.92em;
+  line-height: 1.6;
+}
+
+.card-content .scroll-note::before,
+.card-content .scroll-note::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 34px;
+  background: linear-gradient(90deg, #D8CD84 0%, #BFB268 100%);
+}
+.card-content .scroll-note::before { left: -2px;  border-radius: 8px 3px 3px 8px; }
+.card-content .scroll-note::after  { right: -2px; border-radius: 3px 8px 8px 3px; }
+
+/* ============================================================
+   黑色虚线卡片 —— 封面四宫格用的那种
+   ============================================================ */
+
+.card-content .dash-card {
+  border: 3px dashed #1C1A15;
+  border-radius: 20px;
+  padding: 24px 22px 20px;
+  text-align: center;
+  background: transparent;
+}
+
+/* 卡片顶部的小标签（样图是卷轴横幅造型，这里简化成浅黄描边条，
+   保留「标题被一个浅色条托住」的层次，不做卷轴的卷边） */
+.card-content .dash-card .dash-cap {
+  display: inline-block;
+  background: #EDE8B8;
+  border: 2px solid #9A9161;
+  border-radius: 6px;
+  padding: 6px 22px;
+  margin-bottom: 14px;
+  font-family: "zihunzhengkuchaojihei", 'Noto Sans SC', sans-serif;
+  font-weight: 900;
+  font-size: 0.92em;
+  color: #1C1A15;
+}
+
+/* 图下那行橙红楷体说明 */
+.card-content .dash-card .dash-note {
+  display: block;
+  margin-top: 12px;
+  color: #C8481C;
+  font-size: 0.82em;
+  line-height: 1.45;
+}
+
+/* ============================================================
+   底部免责声明 —— 样图每张都有，灰虚线 + 小字
+   ============================================================ */
+
+.card-content .disclaimer {
+  margin-top: 16px;
+  padding-top: 11px;
+  border-top: 3px dashed rgba(28, 26, 21, 0.3);
+  text-align: center;
+  font-size: 0.66em;
+  color: rgba(28, 26, 21, 0.62);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   标签胶囊：楷体在小字号下偏细，标签改回黑体保证可读
+   ============================================================ */
+
+.card-content .tag,
+.card-content .badge,
+.card-content .badge-sm,
+.card-content .hub-num {
+  font-family: "zihunzhengkuchaojihei", 'Noto Sans SC', sans-serif;
+}

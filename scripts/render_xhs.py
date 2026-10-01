@@ -137,7 +137,9 @@ _SPAN_COMPONENTS = {'cap', 'col-title', 'sub-label', 'badge', 'badge-sm', 'dot',
                      'sticky-title', 'dash-cap', 'dash-note',
                      'w-red', 'w-green', 'w-amber', 'w-ink'}
 
-_DIV_OPEN_RE = re.compile(r'<(div|p|span)\b([^>]*)>', re.IGNORECASE)
+# ul/ol/li 也要能被匹配：.todo 这类组件的容器是 <ul>，只匹配 div/p/span 的话
+# markdown="1" 永远加不到它身上，列表项里的 **加粗** 会原样输出成星号。
+_DIV_OPEN_RE = re.compile(r'<(div|p|span|ul|ol|li)\b([^>]*)>', re.IGNORECASE)
 _CLASS_RE = re.compile(r'\bclass\s*=\s*["\']([^"\']*)["\']', re.IGNORECASE)
 
 

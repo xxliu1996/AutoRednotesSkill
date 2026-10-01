@@ -81,8 +81,13 @@
   box-shadow: 1px 3px 0 rgba(28, 26, 21, 0.28);
 }
 
-/* 空心方框待办列表——样图 Check List 里那种 */
+/* 空心方框待办列表——样图 Check List 里那种。
+ * 写法是 <div class="todo"> 里放普通 markdown 列表，不要手写 <ul><li>：
+ * md_in_html 要求 markdown="1" 出现在每一层祖先上，而裸 <li> 没有 class、
+ * 拿不到这个属性，列表项里的 **加粗** 会原样输出成星号（已实测）。
+ * 交给 markdown 生成 <ul>，下面的选择器同时覆盖 div 包裹和直接挂在 ul 上两种情况。 */
 .card-content .todo { list-style: none; padding-left: 4px; margin: 0; }
+.card-content .todo ul { list-style: none; padding-left: 0; margin: 0; }
 .card-content .todo li {
   position: relative;
   padding-left: 46px;

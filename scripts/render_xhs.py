@@ -67,8 +67,11 @@ PAGING_MODES = ['separator', 'auto-fit', 'auto-split', 'dynamic']
 #: 核心信息必须避开这条带子 —— 见 references/cover-design.md。
 UI_SAFE_BOTTOM = 150
 
-#: 是否在卡片右下角渲染 "n/N" 页码。由 --no-page-number 关闭。
-SHOW_PAGE_NUMBER = True
+#: 是否在卡片右下角渲染 "n/N" 页码。**默认关闭**。
+#: 小红书图里出页码会直接露出"批量生成"的痕迹，真实笔记没有一张带页码。
+#: 以前这里默认 True、靠记得加 --no-page-number 来关，漏加过一次整篇都带上了。
+#: 默认改成 False，要加页码得显式传 --page-number。
+SHOW_PAGE_NUMBER = False
 
 #: 素材解析的上下文。由 configure_materials() 在入口设置一次，
 #: 因为 convert_markdown_to_html 被 auto_split_content 深层调用，逐层传参会污染
@@ -1159,9 +1162,15 @@ def main():
         help='只体检不出图：报告每张卡的渲染高度、溢出、缺失素材、封面字数'
     )
     parser.add_argument(
+        '--page-number',
+        action='store_true',
+        help='在右下角渲染 n/N 页码（默认不渲染）'
+    )
+    # 老的 --no-page-number 保留成 no-op，避免历史命令/文档直接报错
+    parser.add_argument(
         '--no-page-number',
         action='store_true',
-        help='不渲染右下角的 n/N 页码'
+        help=argparse.SUPPRESS
     )
     parser.add_argument(
         '--sample',
@@ -1172,7 +1181,7 @@ def main():
     args = parser.parse_args()
 
     global SHOW_PAGE_NUMBER
-    SHOW_PAGE_NUMBER = not args.no_page_number
+    SHOW_PAGE_NUMBER = args.page_number and not args.no_page_number
 
     if not os.path.exists(args.markdown_file):
         print(f"❌ 错误: 文件不存在 - {args.markdown_file}")

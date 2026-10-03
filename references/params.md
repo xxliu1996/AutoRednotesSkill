@@ -13,7 +13,7 @@ python scripts/render_xhs.py <content.md> [选项]
 | `--mode` | `-m` | 分页模式 | `separator` |
 | `--materials-dir` | | 素材目录 | md 文件所在目录 |
 | `--dry-run` | | 只体检不出图 | — |
-| `--no-page-number` | | 不渲染右下角 `n/N` 页码 | 显示 |
+| `--page-number` | | 在右下角渲染 `n/N` 页码。**默认不渲染，一般也不要开**：真实小红书图没有页码，带上就露出"批量生成"的痕迹 | 不显示 |
 | `--sample` | | 样图路径，配合 `--dry-run` 量与样图的客观差距 | — |
 | `--width` | `-w` | 图片宽度（px） | `1080` |
 | `--height` | | 图片高度（`dynamic` 下为最小高度） | `1440` |

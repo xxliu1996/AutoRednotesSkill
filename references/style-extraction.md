@@ -383,4 +383,5 @@ token 里填你看到的原色即可，不要自己先调亮。
 **深色主题正文糊** —— `ink` 取浅色时面板底会推成近黑，若 `bg_card` 也深就糊成一片。
 让 `bg_card` 和 `surface` 拉开明度差。
 
-**页码**不是风格问题 —— 用 `--no-page-number` 关，不要用 `page_number_color: transparent` 藏。
+**页码**不是风格问题 —— 默认就是关的，不要用 `page_number_color: transparent` 藏，
+也不要因为某张样图角落有数字就去开 `--page-number`。

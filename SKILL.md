@@ -308,7 +308,7 @@ python scripts/render_xhs.py <content.md> [选项]
 | `-m` | 分页模式 | `separator` |
 | `--materials-dir` | 素材目录 | md 文件所在目录 |
 | `--dry-run` | 只体检不出图 | — |
-| `--no-page-number` | 不渲染右下角 `n/N` 页码 | 显示 |
+| `--page-number` | 在右下角渲染 `n/N` 页码（**一般不要加**） | 不显示 |
 | `--sample` | 样图路径，配合 `--dry-run` 量与样图的差距 | — |
 | `-w` / `--height` | 画布尺寸 | 1080 / 1440 |
 | `--dpr` | 像素比 | 2 |

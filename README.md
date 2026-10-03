@@ -173,7 +173,9 @@ subtitle: "封面副标题"
 `scrapbook-kai` 是唯一正文用**楷体**的一套（其余三套都是黑体），还带一批
 专属组件：便签 `.sticky`（折角 + 红图钉）、卷轴 `.scroll-note`、橙边正文框
 `.note-panel`、虚线卡 `.dash-card`、空心方框待办 `.todo`、标题逐词换色
-`.w-red/.w-green/.w-amber`、免责声明条 `.disclaimer`。
+`.w-red/.w-green/.w-amber`、免责声明条 `.disclaimer`、整屏巨字标语卡
+`.shout`、竖排档位标签 `.side-tag`。组件够多，所以同一篇笔记里应该给每张卡
+换一种版式，不要整篇重复同一套骨架。
 
 每套主题的版式规律（哪些组件、什么配色逻辑）记在各自的 `assets/themes/<theme>.custom.css`
 注释里和 `references/layout-authoring.md`「主题专属组件」一节，改主题或加新

@@ -130,12 +130,14 @@ _BLOCK_COMPONENTS = {
     'hub-radial', 'hub-center',
     'icon-tile', 'stat-block', 'quadrant', 'quad-item',
     'sticky', 'scroll-note', 'note-panel', 'dash-card', 'todo', 'disclaimer',
+    'shout',
 }
 
 #: 只放一行字的组件 —— 按行内 markdown 解析，避免被包进 <p> 破坏居中/内边距
 _SPAN_COMPONENTS = {'cap', 'col-title', 'sub-label', 'badge', 'badge-sm', 'dot', 'mark', 'num', 'hub-label', 'q-title', 'q-sub', 'tl-title',
                      'sticky-title', 'dash-cap', 'dash-note',
-                     'w-red', 'w-green', 'w-amber', 'w-ink'}
+                     'w-red', 'w-green', 'w-amber', 'w-ink',
+                     'shout-line', 'shout-sub', 'side-tag'}
 
 # ul/ol/li 也要能被匹配：.todo 这类组件的容器是 <ul>，只匹配 div/p/span 的话
 # markdown="1" 永远加不到它身上，列表项里的 **加粗** 会原样输出成星号。

@@ -32,6 +32,57 @@
 .w-ink,  .cover-title .w-ink,  .card-content .w-ink   { color: #14120E !important; -webkit-text-fill-color: #14120E !important; }
 
 /* ============================================================
+   超大字标语卡 —— 样图里那张纯文字卡（整张就三行巨字，逐行一色，无配图）
+   是这套主题里辨识度最高、但最容易被忽略的一种版式：不配图也能撑住一整张卡。
+   用法：<div class="shout"> 里每行一个 <span class="shout-line w-red">。
+   ============================================================ */
+
+.card-content .shout {
+  margin: 30px 0 24px;
+}
+
+.card-content .shout .shout-line {
+  display: block;
+  font-family: "zihunzhengkuchaojihei", 'Noto Sans SC', sans-serif;
+  font-weight: 900;
+  font-size: 2.05em;
+  line-height: 1.26;
+  letter-spacing: -0.01em;
+  color: #14120E;
+  margin-bottom: 6px;
+}
+
+/* 标语下面挂一句小字注解，楷体，跟巨字拉开层级 */
+.card-content .shout .shout-sub {
+  display: block;
+  margin-top: 16px;
+  font-size: 0.86em;
+  line-height: 1.5;
+  color: #4A443A;
+}
+
+/* ============================================================
+   图文左右分栏 —— 样图「左侧竖排档位标签 + 右侧内容」那种
+   .grid-side 已有（1fr : 1.6fr），这里只补左栏竖排标签的皮肤
+   ============================================================ */
+
+.card-content .side-tag {
+  display: inline-block;
+  background: #1C1A15;
+  color: #F3EFE0;
+  font-family: "zihunzhengkuchaojihei", 'Noto Sans SC', sans-serif;
+  font-weight: 900;
+  font-size: 1.15em;
+  padding: 10px 18px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.card-content .side-tag.t-red   { background: #D6140F; }
+.card-content .side-tag.t-green { background: #00A650; }
+.card-content .side-tag.t-amber { background: #F5A623; color: #1C1A15; }
+
+/* ============================================================
    黄色便签纸 —— 右下角折角 + 可选红图钉
    ============================================================ */
 
@@ -156,8 +207,11 @@
    黑色虚线卡片 —— 封面四宫格用的那种
    ============================================================ */
 
+/* 虚线边和标签托条默认走 ink/浅黄，但都留了 --c-accent 的口子：
+   给栅格加 class="grid grid-N palette" 时，六种分类会各自拿到一个调色盘色，
+   一整屏同构卡片就不会变成一片黑虚线。不加 palette 时 fallback 等于原值。 */
 .card-content .dash-card {
-  border: 3px dashed #1C1A15;
+  border: 3px dashed var(--c-accent, #1C1A15);
   border-radius: 20px;
   padding: 24px 22px 20px;
   text-align: center;
@@ -169,7 +223,7 @@
 .card-content .dash-card .dash-cap {
   display: inline-block;
   background: #EDE8B8;
-  border: 2px solid #9A9161;
+  border: 2px solid var(--c-accent, #9A9161);
   border-radius: 6px;
   padding: 6px 22px;
   margin-bottom: 14px;
@@ -183,7 +237,7 @@
 .card-content .dash-card .dash-note {
   display: block;
   margin-top: 12px;
-  color: #C8481C;
+  color: var(--c-accent, #C8481C);
   font-size: 0.82em;
   line-height: 1.45;
 }

@@ -30,8 +30,14 @@ description: 小红书图文卡片生成技能。从一份 content.md 生成 3:4
 
 `scrapbook-kai` 有一批自己的专属组件（便签 `.sticky`、卷轴 `.scroll-note`、
 橙边正文框 `.note-panel`、虚线卡 `.dash-card`、空心方框待办 `.todo`、
-逐词换色 `.w-red/.w-green/.w-amber`、免责声明条 `.disclaimer`），
+逐词换色 `.w-red/.w-green/.w-amber`、免责声明条 `.disclaimer`、
+巨字标语卡 `.shout` + `.shout-line`/`.shout-sub`、竖排档位标签 `.side-tag`），
 定义在 `assets/themes/scrapbook-kai.custom.css`，用之前先看一眼那个文件。
+
+同一篇笔记里**不要每张卡都用同一套骨架**。`.shout` 这种整屏巨字卡不配图也能
+撑住一整张，`.side-tag` 配 `grid-side` 做图文分栏，`.dash-card` 栅格加
+`palette` 还能让并列项各拿一个调色盘色——先把可用版式列出来，再给每张卡分配
+一种，避免连续几张都是「h1 → 正文框 → 卷轴」。
 
 用 `AskUserQuestion` 问，每个选项配一句适用场景。用户也可以跳过这一步直接说
 "从这张样图提取风格"或"用 xxx 主题"。

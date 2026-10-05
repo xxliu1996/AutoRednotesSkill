@@ -83,6 +83,68 @@
 .card-content .side-tag.t-amber { background: #F5A623; color: #1C1A15; }
 
 /* ============================================================
+   品牌 logo 横排 —— 「我问了这几家」那种并列陈列
+   样图 usstock-market 是「左 logo + 右截图」横向配对纵向堆叠，这里是它的
+   紧凑变体：一行若干个小 logo，每个下面挂一行名字。
+   素材管线把 SVG 包成 <span class="material material--sm">，宽度写死在
+   .material--sm 上，所以这里要连 .material 一起覆盖——否则 7 个 120px 的
+   图标横排会撑到 840px 以上，放不进 780px 的文字区。
+   用法：<div class="ai-row"><div class="ai">![](logo.svg)<span class="ai-name">名字</span></div>…
+   ============================================================ */
+
+.card-content .ai-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px 10px;
+  margin: 16px 0 8px;
+  /* 必须清浮动：logo 行上面常有一张 align=left/right 的配图，不清的话
+     可用宽度被图挤掉三分之一，最后一两个 logo 会被挤到第二行单独站着。 */
+  clear: both;
+}
+
+.card-content .ai-row .ai {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 96px;
+}
+
+/* 覆盖 .material--sm 的 120px */
+.card-content .ai-row .material {
+  width: 54px;
+  margin: 0 0 8px;
+  display: block;
+}
+
+.card-content .ai-row .ai-name {
+  font-family: "zihunzhengkuchaojihei", 'Noto Sans SC', sans-serif;
+  font-weight: 900;
+  font-size: 0.48em;
+  line-height: 1.2;
+  text-align: center;
+  color: #1C1A15;
+}
+
+/* 没有公开 logo 的产品：用一个同尺寸的首字母方块占位，
+   保持这一行的节奏，不留一个空洞。 */
+.card-content .ai-row .ai-mark {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: #1C1A15;
+  color: #F3EFE0;
+  font-family: "zihunzhengkuchaojihei", 'Noto Sans SC', sans-serif;
+  font-weight: 900;
+  font-size: 0.78em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
    黄色便签纸 —— 右下角折角 + 可选红图钉
    ============================================================ */
 

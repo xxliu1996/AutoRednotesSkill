@@ -87,8 +87,8 @@
    样图 usstock-market 是「左 logo + 右截图」横向配对纵向堆叠，这里是它的
    紧凑变体：一行若干个小 logo，每个下面挂一行名字。
    素材管线把 SVG 包成 <span class="material material--sm">，宽度写死在
-   .material--sm 上，所以这里要连 .material 一起覆盖——否则 7 个 120px 的
-   图标横排会撑到 840px 以上，放不进 780px 的文字区。
+   .material--sm 上（120px），一行放不下几个，所以这里连 .material 一起覆盖。
+   放不下就让它换行——两行 4+3 比硬塞一行、把图标压到看不清要好。
    用法：<div class="ai-row"><div class="ai">![](logo.svg)<span class="ai-name">名字</span></div>…
    ============================================================ */
 
@@ -97,32 +97,34 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
-  gap: 16px 10px;
-  margin: 16px 0 8px;
+  gap: 10px 8px;
+  margin: 12px 0 4px;
   /* 必须清浮动：logo 行上面常有一张 align=left/right 的配图，不清的话
      可用宽度被图挤掉三分之一，最后一两个 logo 会被挤到第二行单独站着。 */
   clear: both;
 }
 
+/* 单元格宽度决定一行排几个：780px 的文字区里 185px 正好 4 个一行，
+   7 个就拆成 4+3。留 150px 会变成 5+2，第二行只剩两个居中显得失衡。 */
 .card-content .ai-row .ai {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 96px;
+  width: 185px;
 }
 
 /* 覆盖 .material--sm 的 120px */
 .card-content .ai-row .material {
-  width: 54px;
-  margin: 0 0 8px;
+  width: 78px;
+  margin: 0 0 6px;
   display: block;
 }
 
 .card-content .ai-row .ai-name {
   font-family: "zihunzhengkuchaojihei", 'Noto Sans SC', sans-serif;
   font-weight: 900;
-  font-size: 0.48em;
-  line-height: 1.2;
+  font-size: 0.58em;
+  line-height: 1.15;
   text-align: center;
   color: #1C1A15;
 }
@@ -130,9 +132,9 @@
 /* 没有公开 logo 的产品：用一个同尺寸的首字母方块占位，
    保持这一行的节奏，不留一个空洞。 */
 .card-content .ai-row .ai-mark {
-  width: 54px;
-  height: 54px;
-  margin-bottom: 8px;
+  width: 78px;
+  height: 78px;
+  margin-bottom: 6px;
   border-radius: 12px;
   background: #1C1A15;
   color: #F3EFE0;

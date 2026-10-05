@@ -10,3 +10,8 @@ playwright>=1.40.0
 # 风格探针（从样图量色板与明暗结构）
 pillow>=10.0.0
 numpy>=1.24.0
+
+# 配图统一裁剪时的人脸检测（crop_portraits.py）
+# 必须锁 4.x：OpenCV 5 移除了内置的 Haar 级联文件，只剩需要另外下载
+# ONNX 模型的 FaceDetectorYN，离线跑不起来。
+opencv-python-headless>=4.8,<5

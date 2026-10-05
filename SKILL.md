@@ -162,6 +162,21 @@ python scripts/fetch_images.py "tank military history" -o ./assets -n 6 --type v
 
 详见 `references/image-sourcing.md`。
 
+**并排放的配图必须先裁成同一比例**，否则 `size=md` 只约束宽度，
+每张的高度都不一样，下面的名字标签参差不齐，一眼就是"随手贴的"：
+
+```bash
+# 人像：按人脸位置对齐，统一裁成 3:4
+python scripts/crop_portraits.py images/*.jpg -o images/cropped --ratio 3:4
+
+# logo / 奖章 / 图表这类不能裁的：补边成同一比例，不切内容
+python scripts/crop_portraits.py images/logo.png -o images/cropped \
+    --ratio 3:4 --no-crop --bg "#DEDCCD"
+```
+
+裁完把 md 里的路径指向 `images/cropped/`。锚点取人脸中心、纵向 0.42 处，
+不是几何中心——横幅照片里人往往不在正中间，几何居中会把人裁掉半张脸。
+
 ### 第五步：出图与自检
 
 **出图前必跑自检，别等用户指出问题。**
@@ -342,6 +357,7 @@ scripts/
   preview_theme.py    单主题预览（封面 + 一张正文卡）
   style_probe.py      风格探针：量样图色板/明暗；给两张图则对比
   fetch_images.py     图库检索：抓候选 + 拼联系表 + 记出处（Pixabay）
+  crop_portraits.py   配图统一裁剪：人像对齐人脸，不可裁的图改为补边
   check_deps.sh       依赖安装
 assets/
   themes/*.css        主题样式
